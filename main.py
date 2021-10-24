@@ -1,11 +1,11 @@
 import pandas as pd
 import numpy as np
-from tqdm.notebook import tqdm
 
 import torch
 from torch.utils.data import Dataset, DataLoader
 import torch.nn as nn
 import pytorch_lightning as pl
+CUDA_VISIBLE_DEVICES = 0
 
 np.random.seed(123)
 
@@ -158,7 +158,7 @@ all_movieIds = ratings['movieId'].unique()
 
 model = NCF(num_users, num_items, train_ratings, all_movieIds)
 
-trainer = pl.Trainer(max_epochs=5, gpus=1, reload_dataloaders_every_epoch=True,
+trainer = pl.Trainer(max_epochs=5, gpus=0, reload_dataloaders_every_epoch=True,
                      progress_bar_refresh_rate=50, logger=False, checkpoint_callback=False)
 
 trainer.fit(model)
