@@ -4,7 +4,11 @@ from torch.utils.data import Dataset
 
 from config import verbose
 
+
 class BeerTrainDataset(Dataset):
+
+    GENERATED = False
+    USERS, ITEMS, LABELS = [], [], []
     """
     Beer PyTorch Dataset for Training
 
@@ -22,6 +26,12 @@ class BeerTrainDataset(Dataset):
         return self.users[idx], self.items[idx], self.labels[idx]
 
     def get_dataset(self, ratings, all_beer_ids):
+        if BeerTrainDataset.GENERATED:
+            return self.get_generated()
+        else:
+            return self.generate_dataset(ratings, all_beer_ids)
+
+    def generate_dataset(self, ratings, all_beer_ids):
         if verbose:
             print('Appending negative example to use implicit feedback...')
         users, items, labels = [], [], []
@@ -42,4 +52,12 @@ class BeerTrainDataset(Dataset):
 
         if verbose:
             print('Done.')
-        return torch.tensor(users), torch.tensor(items), torch.tensor(labels)
+
+        BeerTrainDataset.USERS, BeerTrainDataset.ITEMS, BeerTrainDataset.LABELS = \
+            torch.tensor(users), torch.tensor(items), torch.tensor(labels)
+        BeerTrainDataset.GENERATED = True
+
+        return BeerTrainDataset.USERS, BeerTrainDataset.ITEMS, BeerTrainDataset.LABELS
+
+    def get_generated(self):
+        return BeerTrainDataset.USERS, BeerTrainDataset.ITEMS, BeerTrainDataset.LABELS

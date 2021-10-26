@@ -34,4 +34,4 @@ def test(ratings, test_ratings, model, all_beer_ids):
 
     if verbose:
         print('Done.')
-    print("The Hit Ratio @{} is {:.2f}".format(hit_ratio, np.average(hits)))
+    print(f'The Hit Ratio @{hit_ratio} is {round(np.average(hits), 2)}')
