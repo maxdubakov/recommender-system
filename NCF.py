@@ -3,7 +3,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 import pytorch_lightning as pl
 
-from MovieLensTrainDataset import MovieLensTrainDataset
+from BeerTrainDataset import BeerTrainDataset
 
 from config import batch_size
 
@@ -16,10 +16,10 @@ class NCF(pl.LightningModule):
             num_users (int): Number of unique users
             num_items (int): Number of unique items
             ratings (pd.DataFrame): Dataframe containing the movie ratings for training
-            all_movie_ids (list): List containing all movieIds (train + test)
+            all_beer_ids (list): List containing all beer ids (train + test)
     """
 
-    def __init__(self, num_users, num_items, ratings, all_movie_ids):
+    def __init__(self, num_users, num_items, ratings, all_beer_ids):
         super().__init__()
         self.user_embedding = nn.Embedding(num_embeddings=num_users, embedding_dim=8)
         self.item_embedding = nn.Embedding(num_embeddings=num_items, embedding_dim=8)
@@ -27,7 +27,7 @@ class NCF(pl.LightningModule):
         self.fc2 = nn.Linear(in_features=64, out_features=32)
         self.output = nn.Linear(in_features=32, out_features=1)
         self.ratings = ratings
-        self.all_movieIds = all_movie_ids
+        self.all_beer_ids = all_beer_ids
 
     def forward(self, user_input, item_input):
 
@@ -57,5 +57,5 @@ class NCF(pl.LightningModule):
         return torch.optim.Adam(self.parameters())
 
     def train_dataloader(self):
-        return DataLoader(MovieLensTrainDataset(self.ratings, self.all_movieIds),
+        return DataLoader(BeerTrainDataset(self.ratings, self.all_beer_ids),
                           batch_size=batch_size, num_workers=4)
