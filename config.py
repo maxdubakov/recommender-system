@@ -8,6 +8,6 @@ batch_size = 512
 save_model = True
 epochs = 5
 gpus = 0
-reload_dataloaders_every_epoch = True
+reload_dataloaders_every_n_epochs = 1
 progress_bar_refresh_rate = 50
 checkpoint_callback = False
