@@ -12,7 +12,8 @@ def main():
     all_beer_ids = ratings['beer_id'].unique()
 
     model = train(num_users, num_items, train_ratings, all_beer_ids)
-    test(ratings, test_ratings, model, all_beer_ids)
+    hit_ratio = test(ratings, test_ratings, model, all_beer_ids)
+    return hit_ratio
 
 
 if __name__ == '__main__':

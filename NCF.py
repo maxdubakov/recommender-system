@@ -5,7 +5,7 @@ import pytorch_lightning as pl
 
 from BeerTrainDataset import BeerTrainDataset
 
-from config import batch_size
+from config import Config
 
 
 class NCF(pl.LightningModule):
@@ -21,9 +21,9 @@ class NCF(pl.LightningModule):
 
     def __init__(self, num_users, num_items, ratings, all_beer_ids):
         super().__init__()
-        self.user_embedding = nn.Embedding(num_embeddings=num_users, embedding_dim=8)
-        self.item_embedding = nn.Embedding(num_embeddings=num_items, embedding_dim=8)
-        self.fc1 = nn.Linear(in_features=16, out_features=64)
+        self.user_embedding = nn.Embedding(num_embeddings=num_users, embedding_dim=Config.embedding_dim)
+        self.item_embedding = nn.Embedding(num_embeddings=num_items, embedding_dim=Config.embedding_dim)
+        self.fc1 = nn.Linear(in_features=Config.first_layer, out_features=64)
         self.fc2 = nn.Linear(in_features=64, out_features=32)
         self.output = nn.Linear(in_features=32, out_features=1)
         self.ratings = ratings
@@ -58,4 +58,4 @@ class NCF(pl.LightningModule):
 
     def train_dataloader(self):
         return DataLoader(BeerTrainDataset(self.ratings, self.all_beer_ids),
-                          batch_size=batch_size, num_workers=4)
+                          batch_size=Config.batch_size, num_workers=4)

@@ -2,7 +2,7 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset
 
-from config import verbose
+from config import Config
 
 
 class BeerTrainDataset(Dataset):
@@ -32,7 +32,7 @@ class BeerTrainDataset(Dataset):
             return self.generate_dataset(ratings, all_beer_ids)
 
     def generate_dataset(self, ratings, all_beer_ids):
-        if verbose:
+        if Config.verbose:
             print('Appending negative example to use implicit feedback...')
         users, items, labels = [], [], []
         user_item_set = set(zip(ratings['user_id'], ratings['beer_id']))
@@ -50,7 +50,7 @@ class BeerTrainDataset(Dataset):
                 items.append(negative_item)
                 labels.append(0)
 
-        if verbose:
+        if Config.verbose:
             print('Done.')
 
         BeerTrainDataset.USERS, BeerTrainDataset.ITEMS, BeerTrainDataset.LABELS = \
