@@ -1,7 +1,11 @@
+from queue import Queue
+import time
+
 import numpy as np
 import torch
 
 from config import Config
+from threads.TestWorker import TestWorker
 
 
 def test(ratings, test_ratings, model, all_beer_ids):
@@ -16,23 +20,23 @@ def test(ratings, test_ratings, model, all_beer_ids):
         print('Done.')
         print(f'Calculating The Hit Ratio @{Config.hit_ratio}...')
     hits = []
-    for (u, i) in test_user_item_set:
-        interacted_items = user_interacted_items[u]
-        not_interacted_items = set(all_beer_ids) - set(interacted_items)
-        selected_not_interacted = list(np.random.choice(list(not_interacted_items), 99))
-        test_items = selected_not_interacted + [i]
+    queue = Queue()
+    # Create 8 worker threads
+    for x in range(8):
+        worker = TestWorker(queue, user_interacted_items, all_beer_ids, model)
+        # Setting daemon to True will let the main thread exit even though the workers are blocking
+        worker.daemon = True
+        worker.start()
 
-        predicted_labels = np.squeeze(model(torch.tensor([u]*100),
-                                            torch.tensor(test_items)).detach().numpy())
+    start_millis = round(time.time() * 1000)
+    for u, i in test_user_item_set:
+        # print(f'Queueing ({u},{i})')
+        queue.put((u, i, hits))
 
-        top_n_items = [test_items[i] for i in np.argsort(predicted_labels)[::-1][0:Config.hit_ratio].tolist()]
-
-        if i in top_n_items:
-            hits.append(1)
-        else:
-            hits.append(0)
-
+    queue.join()
+    required_time = round(time.time() * 1000) - start_millis
     if Config.verbose:
+        print(f'Time required: {required_time}')
         print('Done.')
 
     hit_ratio = round(np.average(hits), 2)
