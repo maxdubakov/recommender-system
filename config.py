@@ -11,7 +11,7 @@ class Config(object):
     hit_ratio = 10
     batch_size = 512
     embedding_dim = 8
-    first_layer = 16
+    first_layer = embedding_dim * 2
     save_model = True
     epochs = 5
     gpus = 0
