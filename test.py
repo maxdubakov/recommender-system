@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 import torch
 
@@ -16,6 +18,7 @@ def test(ratings, test_ratings, model, all_beer_ids):
         print('Done.')
         print(f'Calculating The Hit Ratio @{Config.hit_ratio}...')
     hits = []
+    start_time = round(time.time() * 1000)
     for (u, i) in test_user_item_set:
         interacted_items = user_interacted_items[u]
         not_interacted_items = set(all_beer_ids) - set(interacted_items)
@@ -31,8 +34,9 @@ def test(ratings, test_ratings, model, all_beer_ids):
             hits.append(1)
         else:
             hits.append(0)
-
+    required_time = round(time.time() * 1000) - start_time
     if Config.verbose:
+        print(f'Required Time: {required_time} (ms)')
         print('Done.')
 
     hit_ratio = round(np.average(hits), 2)

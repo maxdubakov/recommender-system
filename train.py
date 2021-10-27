@@ -23,3 +23,9 @@ def train(num_users, num_items, train_ratings, all_beer_ids):
             print(f'The NFC model has been saved to the {Config.save_path}')
 
     return model
+
+
+def load():
+    with open(Config.load_path, 'rb') as f:
+        model = pkl.load(f)
+    return model

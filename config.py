@@ -22,6 +22,7 @@ class Config(object):
     rank_latest = 'rank_latest'
     model_id = 2
     save_path = f'./models/model_{model_id}.pkl'
+    load_path = './models/model_1.pkl'
 
     def __init__(self, _num_negatives=4, _batch_size=512, _embedding_dim=8, _epochs=5, _first_layer=16):
         Config.set_num_negatives(_num_negatives)
