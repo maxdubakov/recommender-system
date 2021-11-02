@@ -20,6 +20,7 @@ class Config(object):
     checkpoint_callback = False
     date_cols = ['review_time']
     rank_latest = 'rank_latest'
+    workers = 8
     model_id = 2
     save_path = f'./models/model_{model_id}.pkl'
 
