@@ -3,7 +3,7 @@
 
 class Config(object):
 
-    data_path = './data/beer_reviews.csv'
+    data_path = './data/beer_new_reviews.csv'
     dataset_name = 'Beer'
     part_of_dataset_used = 1
     verbose = True

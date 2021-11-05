@@ -1,3 +1,5 @@
+import pickle as pkl
+
 import numpy as np
 import pandas as pd
 
@@ -11,6 +13,9 @@ def read():
 def str_to_id(ratings: pd.DataFrame, col_name: str, new_col_name):
     unique_values = ratings[col_name].unique()
     name_to_int = dict(zip(ratings[col_name].unique(), range(len(unique_values))))
+
+    pkl.dump(name_to_int, open('./models/review_profilename_to_user_id.pkl', 'wb+'), protocol=pkl.HIGHEST_PROTOCOL)
+
     ratings[new_col_name] = ratings[col_name].apply(lambda name: name_to_int[name])
     return ratings
 
@@ -65,3 +70,27 @@ def train_test_split(ratings):
     if Config.verbose:
         print('Done.')
     return train_ratings, test_ratings
+
+
+def eliminate_duplicated_ids(data: pd.DataFrame):
+
+    beer_name_id: pd.DataFrame = data[['beer_beerid', 'beer_name']].drop_duplicates()
+    print(f'Before: {len(beer_name_id)}')
+    repeated_ids = beer_name_id.groupby('beer_name').count().sort_values('beer_beerid', ascending=False)
+    repeated_ids = list(repeated_ids[repeated_ids['beer_beerid'] > 1]['beer_beerid'].to_dict().keys())
+    unique_name_to_id = dict()
+    for row in beer_name_id.iterrows():
+        beer_name = row[1]['beer_name']
+        beer_id = row[1]['beer_beerid']
+        if beer_name not in unique_name_to_id.keys() and beer_name in repeated_ids:
+            unique_name_to_id[beer_name] = beer_id
+
+    for _name, _id in unique_name_to_id.items():
+        data['beer_beerid'][data['beer_name'] == _name] = _id
+
+    print(f"After: {len(data[['beer_beerid', 'beer_name']].drop_duplicates())}")
+    data.to_csv('./data/beer_new_reviews.csv')
+
+
+if __name__ == '__main__':
+    eliminate_duplicated_ids(read())
